@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+    Demo template. Javascript function injectEvents(..) is called from the App
+    and brings an array of dictionaries (events).
+
+    Requires:
+    - jquery-2.0.3.min.js
+    - moment-with-langs.min.js
+    - i18n.js
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Coonference Template 'progress'</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script type="text/javascript">
+//<![CDATA[
+    /* Very simple i18n - see i18nText() from i18n.js. */
+    var txtI18n = {
+        'de': {
+            'This room is free.': 'Dieser Raum ist frei.',
+            'Upcoming Events': 'Nächste Termine',
+            '{{dtstart}} until&nbsp;{{dtend}}': '{{dtstart}} bis&nbsp;{{dtend}}'
+        }
+    };
+  //]]>
+  </script>
+  <script type="text/javascript">
+//<![CDATA[
+  window.onresize = function () {
+      // $("#size").html( '' + window.innerWidth + 'x' + window.innerHeight );
+      $("body").css('height', window.innerHeight);
+      $("body").css('width', window.innerWidth);
+  };
+  //]]>
+  </script>
+  <style type="text/css">
+/*<![CDATA[*/
+
+/*--------------css -------------------------------------------------------------------*/
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0 none red;
+    font: inherit;
+  }
+  html {
+    font-size: 120%;
+    background-color: white;
+  }
+  body{
+    font-family: EuphemiaUCAS, Futura-Medium, DamascusMedium, sans-serif;
+  }
+  li{ padding: 20px 9px 0 0;
+      list-style-type: none
+  }
+  h1 {
+    font-weight: bold;
+  }
+  /* display placeholder only by default */
+  #current_placeholder {
+    display: block;
+  }
+  #current_content {
+    display: none;
+  }
+  /* display content only if we have one */
+  .has_current  #current_placeholder {
+    display: none;
+  }
+  .has_current  #current_content {
+    display: block;
+  }
+  .summary{
+  font-weight: bold;
+  }
+/*--------------css timeslider----------------------------------------------------------*/
+  #timeslider {
+    width: 10%;
+    float:left;
+    background-color: lightgrey;
+    height: 100%;
+  }
+  #timeslider_total {
+    position: relative;
+    top: 20%;
+    height: 75%;
+    background-color: red;
+  }
+  #timeslider_past {
+    position: relative;
+    top: 0;
+    background-color: green;
+    height: 80%;
+  }
+  #timeslider_total > p {
+    font-size: 80%;
+  }
+  #dtstart {
+    position: absolute;
+    left: 10%;
+    top: -3ex;
+    background-color: transparent;
+  }
+  #now {
+    width: 10%;
+    position: relative;
+    left: 110%;
+    top: -1ex;
+  }
+  #dtend {
+    position: absolute;
+    left: 10%;
+    bottom: -3ex;
+    background-color: transparent;
+  }
+/*--------------Content-----------------------------------------------------------------*/
+  
+  #headline{
+  float: left;
+  height: 5%;
+  width: 85%;
+  }
+  #main {
+    float:left;
+    height: 95%;
+    width: 55%;
+    padding-left: 6%;
+    overflow: hidden;
+  }
+  #current_placeholder {
+    margin-top: 18%;
+    padding: 2% 2% 10% 5%;
+    font-size: 180%;
+  }
+  #location {
+    width: 80%; 
+    font-size: 240%;
+    padding: 2% 2% 10% 6%;
+  }
+  #summary {
+    padding: 10% 2% 10% 0%;
+    font-size: 180%;
+    font-weight: bold;
+    text-overflow: ellipsis;
+  }
+  #description {
+    padding: 5% 2% 2% 0%;
+  }
+  #participants {
+  	font-style: oblique;
+    padding: 2% 2% 2% 0%;
+  }
+  #participants ul {
+    list-style-type: none;
+  }
+  .cut{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+   .description{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+/*--------------future events-----------------------------------------------------------*/
+   #future {
+  }
+  #future_prompt {
+    font-size: 120%;
+  }
+  #future ul {
+    height: 90%;
+    list-style-type: none;
+  }
+  #future ul li {
+    height: 33%;
+  }
+  #box {
+  }
+
+/*-----------------------------------------------Media Querrys--------------------------*/
+/*-----------------------------------------------ipad landscape-------------------------*/
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and(orientation: landscape) {
+   #future {
+    float: right;
+    width: 27%;
+    height: 90%;
+    margin-left: 1%;
+    margin-bottom: 1%;
+    padding-left: 1%;
+    border-left: 1px solid black;
+    }
+   #location {
+    width: 65%;
+  }
+}
+/*-----------------------------------------------ipad portrait--------------------------*/
+  @media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation: portrait) {
+    #future {
+    border-top: 1px solid black;
+    float: left;
+    width: 90%;
+    height: 60%;
+    }
+    #timeslider {
+      height: 60%;
+    }
+    #main {
+      height: 50%;
+      width: 78%;
+    }
+    #future {
+      width: 98%;
+      height: 40%;
+     }
+  #future > p {
+  }
+    #future ul li {
+    height: 40%;
+    padding: 5% 0% 0% 5%;
+  }
+    #future_prompt {
+    padding: 5% 2% 0% 2%;
+  }
+
+  }
+  
+/*-----------------------------------------------iphone portrait------------------------*/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : portrait) { 
+ 	html {
+	 background: url(please.png) no-repeat center center fixed;
+	 background-size: cover;
+	 background-color: white;
+	 }
+	#location {
+	display: none;}
+	#timeslider {
+	display: none;}
+	#summary {
+	display: none;}
+	#description {
+	display: none;}
+	#future {
+	display: none;}
+	#participants {
+	display: none;}
+	#no_event {
+	display: none;}
+}
+/*-----------------------------------------------iphone landscape-----------------------*/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : landscape) { 
+
+	*{
+	font-size: 95%;}
+	#headline{
+  	padding-left: 5%;
+    }
+    #location {
+	width: 98%;}
+    #summary {
+    padding: 15% 2% 2% 0%;
+	}
+	#main {
+    width: 88%;
+    padding-left: 10%;
+    height: 97%;
+	text-overflow: ellipsis;
+    }
+	#future {
+	display: none;
+	}
+	#future_li {
+	display: none;
+	}
+    #timeslider {
+    width: 2%;
+  }
+  #timeslider_total {
+    height: 80%;
+  }
+  #dtstart {
+  	display: none;
+  }
+  #now {
+    width: 10%;
+    position: relative;
+    left: 120%;
+    top: -1ex;
+    z-index: 1;
+    background-color: white;
+  }
+  #dtend {
+    position: absolute;
+    left: 120%;
+    bottom: -3ex;
+    z-index: 2;
+    background-color: white;
+  }
+  } 
+
+
+  /*]]>*/
+  </style>
+</head>
+
+<body onload="window.onresize();">
+  <div id="timeslider">
+    <div id="timeslider_total">
+      <p id="dtstart">08:00</p>
+
+      <p id="dtend">12:00</p>
+
+      <div id="timeslider_past"></div>
+
+      <p id="now">09:47</p>
+    </div>
+  </div>
+  <div id="headline">
+ <h1 id="location" class="cut"><!-- is completely re-filled on each injectEvents(..) -->
+     {{event["calendar"]}}</h1>
+     </div>
+  <div id="main">
+       <div id="current" class="has_current">
+      <div id="current_placeholder">
+        <p id="no_event">*This room is free.</p>
+      </div>
+
+      <div id="current_content">
+        <p id="summary"><!-- is completely re-filled on each injectEvents(..) -->
+         {{event["summary"]}}</p>
+
+        <p id="description"><!-- is completely re-filled on each injectEvents(..) -->
+         {{event["description"]}} Lörem ipsum dolor sit amet, consectetur adipiscing elit. Donec a
+        diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec
+        consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas
+        mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur.
+        Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper
+        sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur
+        dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero
+        in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at
+        malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes,
+        nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis
+        semper ac in est.</p>
+
+        <div id="participants">
+          <p id="participants_prompt">Participants</p>
+
+          <p id="participants_content">event{{organizer}}, event{{organizer}},
+          event{{participant}}, event{{participant}}, event{{participant}}, event{{participant}},
+          event{{participant}}, event{{participant}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="future">
+    <h2 id="future_prompt"><!-- is completely re-filled on each injectEvents(..) -->Upcoming
+    Events:</h2>
+
+    <ul id="future_list" class="cut">
+      <!-- is completely re-filled on each injectEvents(..) -->
+
+      <li id="box">
+        <p class="time">{{dtstart}}&nbsp;until {{dtend}}</p>
+
+        <h1 class="summary" class="cut">{{summary}}</h1>
+
+        <p class="description" class="cut">{{description}}</p>
+
+        <p class="participants">{{participants}}</p>
+      </li>
+
+      <li id="box">
+        <p class="time">{{dtstart}}&nbsp;until {{dtend}}</p>
+
+        <h1 class="summary">{{summary}}</h1>
+
+        <p class="description">{{description}}</p>
+
+        <p class="participants">{{participants}}</p>
+      </li>
+
+      <li id="box">
+        <p class="time">{{dtstart}}&nbsp;until {{dtend}}</p>
+
+        <h1 class="summary">{{summary}}</h1>
+
+        <p class="description">{{description}}</p>
+
+        <p class="participants">{{participants}}</p>
+      </li>
+    </ul>
+  </div><script type="text/javascript" src="jquery-2.0.3.min.js">
+</script><!-- http://jquery.com/ -->
+  <script type="text/javascript" src="moment-with-langs.min.js">
+</script><!-- http://momentjs.com/ -->
+  <script type="text/javascript" src="i18n.js">
+</script><script type="text/javascript">
+//<![CDATA[
+
+    var iso8601Fmt = "YYYY-MM-DD HH:mm:ss Z";
+    var allEvents = false;  // set during injectEvents(..)
+    var currentEvent = -1;  // set during injectEvents(..)
+
+    function updateTimeEverySecond() {
+      var now = moment();
+      $("#now").html( myCalendar( now, now ) );
+      var dtstart = now;
+      var dtend = now;
+      if( allEvents ) {
+        if( currentEventIndex >= 0 ) {
+          // simple case: we have a real, currently running event.
+          var evt = allEvents[currentEventIndex];
+          dtstart = moment(evt["dtstart"], iso8601Fmt);
+          dtend   = moment(evt["dtend"], iso8601Fmt);
+        } else {
+          // there's no currently running event,
+          var i = -(currentEventIndex + 1);
+          if( i - 1 >= 0 )
+            // but we have one that ended in the past...
+            dtstart = moment(allEvents[i - 1]["dtend"], iso8601Fmt);
+          if( i < allEvents.length )
+            // and another one starting in the future...
+            dtend = moment(allEvents[i]["dtstart"], iso8601Fmt);
+        }
+      }
+      $('#dtstart').css('visibility', dtstart != now ? 'visible' : 'hidden').html( myCalendar( dtstart, now ) );
+      $('#dtend').css('visibility', dtend != now ? 'visible' : 'hidden').html( myCalendar( dtend, dtstart ) );
+
+      var percent = 100 * now.diff(dtstart) / dtend.diff(dtstart);
+      if( isNaN(percent) )
+        percent = 0;
+      $('#timeslider_past').animate({height: '' + percent + '%'},1000, 'linear');
+    }
+    $(function() {
+      updateTimeEverySecond();
+      setInterval(updateTimeEverySecond, 1000);
+    });
+
+    /** Called from the app after template html is fully loaded and prior each event change (start, stop).
+    */
+    function injectEvents(events) {
+      $("#location").html( '' );
+      $('#no_event').html( i18nText("This room is free.") );
+      $('#future_prompt').html( i18nText("Upcoming Events") );
+      $("#future_list").html('');
+      $('#current').removeClass('has_current');
+      var now = moment();
+      allEvents = events;
+      // mark position where 'now' would have to sit.
+      // See also http://blog.mro.name/2010/01/binary-search-nsarray/
+      currentEventIndex = -(events.length + 1);
+      var futureCount = 0;
+      for (var i = 0; i < events.length; i++) {
+        var evt = events[i];
+        if(i == 0)
+          $("#location").html( evt["calendar"] );
+        var dtstart = moment(evt["dtstart"], iso8601Fmt);
+        var dtend   = moment(evt["dtend"], iso8601Fmt);
+        if( dtend.isAfter(now) ) {
+          // event hasn't ended yet...
+          var people = evt["organizers"] ? evt["organizers"] : [];
+          if( evt["participants"] )
+            people = people.concat(evt["participants"]);
+          people = people.join(', ');
+          if ( dtstart.isAfter(now) ) {
+            if( currentEventIndex == -(events.length + 1) )
+              // mark position where 'now' would have to sit.
+              // See also http://blog.mro.name/2010/01/binary-search-nsarray/
+              currentEventIndex = -(i + 1);
+            // hasn't started yet - a.k.a. is in the future
+            var li = document.createElement('li'); // http://stackoverflow.com/a/6976126
+            $(li).appendTo($("#future_list"));
+            $(document.createElement('p')).appendTo(li).addClass('time').html( i18nText( '{{dtstart}} until&nbsp;{{dtend}}', {
+              'dtstart': myCalendar( dtstart, now ),
+              'dtend': myCalendar( dtend, dtstart )
+            }) );
+            $(document.createElement('p')).appendTo(li).addClass('summary').html( evt["summary"] );
+            $(document.createElement('p')).appendTo(li).addClass('description').html( evt["description"] );
+            $(document.createElement('p')).appendTo(li).addClass('participants').html( people );
+            if (++futureCount > 2)
+              // stop after max. 3 future events.
+              break;
+          } else {
+            // HAS already started
+            currentEventIndex = i;
+            $('#current').addClass('has_current');
+            $("#location").html( evt["calendar"] ? evt["calendar"] : '');
+            $("#summary").html( evt["summary"] ? evt["summary"] : '' );
+            $("#description").html( evt["description"] ? evt["description"] : '' );
+            $("#participants").html( people );
+          }
+        }
+      }
+      return "ok";
+    }
+    //]]>
+  </script>
+  <!-- Uncomment the following 2 script tags to load sample data while developing the template in Safari -->
+  <!-- script type="text/javascript" src="sampledata.js">
+</script><script type="text/javascript">
+// <![CDATA[
+  injectEvents(data);
+  //]]>
+  </script -->
+</body>
+</html>

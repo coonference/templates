@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+    Demo template. Javascript function injectEvents(..) is called from the App
+    and brings an array of dictionaries (events).
+
+    Requires:
+    - jquery-2.0.3.min.js
+    - moment-with-langs.min.js
+    - i18n.js
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.10), see www.w3.org" />
+
+  <title>Coonference Template 'colors'</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script type="text/javascript">
+//<![CDATA[
+    /* Very simple i18n - see i18nText() from i18n.js. */
+    var txtI18n = {
+      "de": {
+        "This room is free.":             "Dieser Raum ist frei.",
+        "from {{dtstart}} to {{dtend}}":  "von {{dtstart}} bis {{dtend}}",
+        "Next event starts {{dtstart}}":  "Nächster Termin {{dtstart}}",
+      },
+    }
+  //]]>
+  </script>
+  <style type="text/css">
+/*<![CDATA[*/
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+  }
+  html {
+  }
+  body{
+    font-family: 'Gurmukhi MN';
+    background-color: black;
+  }
+  p {
+    font-size: 27px;
+    padding: 30px;
+    line-height: 142%;
+  }
+    .cut{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+
+  #startend {
+    padding-top: 30px;
+    padding-left: 27px;
+    padding-bottom: 15px;
+  }
+  #text {
+    -webkit-border-radius: 120px 0 0 60px;
+    background-color: #BDCD00;
+    bottom: 0;
+  }
+  #location {
+    padding: 30px 90px;
+    color: #AF418E;
+    font-weight: bold;
+    font-size: 96px;
+    white-space: nowrap;
+    letter-spacing: -0.05em;
+  }
+  #events {
+    margin: 0px 0px 0px 60px;
+    color: #FFED00;
+    -webkit-border-radius: 60px 0 0 21px;
+  }
+  #current {
+    color: #FFED00;
+    background: #E75113;
+    -webkit-border-radius:42px 0px 0px 0px;
+    padding: 0px;
+  }
+  /* display placeholder only by default */
+  #current_placeholder {
+    display: block;
+  }
+  #current_content {
+    display: none;
+  }
+  /* display content only if we have one */
+  .has_current  #current_placeholder {
+    display: none;
+  }
+  .has_current  #current_content {
+    display: block;
+  }
+
+  #summary {
+    font-size: 39px;
+    padding-top: 9px;
+    padding-left: 27px;
+    padding-bottom: 15px;
+  }
+  #notes {
+    padding-left: 27px;
+    padding-top: 3px;
+    overflow: hidden;
+    padding-bottom: 9px;
+  }
+  #future > div > p {
+    -webkit-border-radius:0px 0px 0px 21px;
+  }
+  /* trick to color bottom corner like following entry: */
+  #future > div:nth-child(2n+1)     { background-color: #9190fb; }
+  #future > div:nth-child(2n+1) > p { background-color: #AF418E; }
+  #future > div:nth-child(2n)       { background-color: #AF418E; }
+  #future > div:nth-child(2n)   > p { background-color: #9190fb; }
+  #future > div:last-child { background-color: #BDCD00; }
+
+  #clock {
+    font-size:  42px;
+    right:      30px;
+    bottom:     15px;
+    position:   fixed;
+    color:      #AF418E;
+  }
+  /* http://www.john-smith.me/emulating--lt-blink-gt--using-webkit-css3-animation */
+  @-webkit-keyframes clock-colon-pulse { from { opacity: 1.0; } to { opacity: 0.0; } }
+  #clock_colon {
+    -webkit-animation-name: clock-colon-pulse;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+    -webkit-animation-duration: 1s;
+  }
+/* iPod/iPhone */
+  @media (max-device-width : 568px) and (orientation: landscape) {
+    /* display ONLY first entry - with greenish corner background */
+      #future > div { display: none; }
+      #future > div:first-child { display: block; background-color: #BDCD00; }
+      #text {
+       -webkit-border-radius: 60px 0 0 30px;
+  }   #startend {
+        padding-top: 27px;
+        padding-left: 30px;
+        padding-bottom: 15px;
+       }
+      #location {
+        font-size: 36px;
+        padding: 9px 1px 9px 42px;
+        bottom: 0px;
+        }      
+      p {
+        font-size: 21px;
+        }
+      #events {
+        margin: 0px 0px 0px 18px;
+        -webkit-border-radius: 6px 0 0 2px;
+        }
+     #current {
+      -webkit-border-radius:42px 0px 0px 0px;
+      padding-top: 6px;
+     }
+     #summary {
+      font-size: 36px;
+      padding-left: 24px;
+      }
+     #notes {
+      padding-left: 24px;
+      font-size: 18px;
+      padding-top: 0px;
+      padding-bottom: 30px;
+      height: 60px;
+      }
+     #clock {
+      font-size:  27px;
+      right:      15px;
+      bottom:     9px;
+      color: #FFED00;
+      }
+  /* display placeholder only by default */
+  #current_placeholder {
+    display: block;
+  }
+  #current_content {
+    display: none;
+  }
+  }
+  @media only screen 
+and (orientation : portrait)
+and (max-device-width : 320px) 
+{
+    /* display ONLY first entry - with greenish corner background */
+    *{
+    display: none;
+  }
+  html {
+  display: block;}
+   body{
+   	display: block;
+	 background: url(please.png) no-repeat center center fixed;
+	 background-size: cover;
+	 background-color: white;
+	 }
+  }
+
+  /* iPad */
+  @media (max-device-width : 768px) and (orientation: landscape) {
+    #future > div { display: none; }
+    #future > div:first-child { display: block; background-color: #BDCD00; }
+    #text { height: 768px; }
+    #notes {
+    height: 10.5ex;
+    text-overflow: ellipsis;
+  }
+  }
+  @media (max-device-width : 768px) and (orientation: portrait) {
+    #text { height: 1024px; 
+	}
+    #location {
+    font-size: 72px;
+  }
+  #notes {
+    height: 15.5ex;
+    text-overflow: ellipsis; 
+    width: 96%;
+  }
+  }
+
+  #notes_de {
+    overflow-y: ellipsis;
+  }
+
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <div id="text">
+    <h1 id="location" class="cut"><!-- is completely re-filled on each injectEvents(..) -->
+     {{event["calendar"]}}</h1>
+
+    <div id="events">
+      <div id="current" class="has_current">
+        <div id="current_placeholder">
+          <p id="no_event">*This room is free.</p>
+        </div>
+
+        <div id="current_content">
+          <p id="startend">
+          <!-- is completely re-filled on each injectEvents(..), see i18n below -->
+           from {{event["dtstart"]}} to {{event["dtend"]}}</p>
+
+          <p id="summary"><!-- is completely re-filled on each injectEvents(..) -->
+           {{event["summary"]}}</p>
+
+          <p id="notes"><!-- is completely re-filled on each injectEvents(..) -->
+           {{event["notes"]}} Lörem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam
+          lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur
+          ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit
+          amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut
+          libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur
+          adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed,
+          adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur
+          dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero
+          in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at
+          malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes,
+          nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis
+          semper ac in est.</p>
+        </div>
+      </div>
+
+      <div id="future">
+        <!-- completely re-filled on each injectEvents(..) -->
+
+        <div>
+          <p>next event {{event["dtstart"]}}</p>
+        </div>
+
+        <div>
+          <p>next event {{event["dtstart"]}}</p>
+        </div>
+
+        <div>
+          <p>next event {{event["dtstart"]}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="clock" id="clock">
+      <span id="clock_hour">00</span><span id="clock_colon">:</span><span id=
+      "clock_minute">00</span>
+    </div>
+  </div><script type="text/javascript" src="jquery-2.0.3.min.js">
+</script><!-- http://jquery.com/ -->
+  <script type="text/javascript" src="moment-with-langs.min.js">
+</script><!-- http://momentjs.com/ -->
+  <script type="text/javascript" src="i18n.js">
+</script><script type="text/javascript">
+//<![CDATA[
+
+    function updateTimeEverySecond() {
+      var now = moment();
+      $("#clock_hour").html( now.format("HH") );
+      $("#clock_minute").html( now.format("mm") ); // strange but true: lowercase
+    }
+    $(function() {
+      updateTimeEverySecond();
+      setInterval(updateTimeEverySecond, 1000);
+    });
+
+    var iso8601Fmt = "YYYY-MM-DD HH:mm:ss Z";
+    /** Called from the app after template html is fully loaded and prior each event change (start, stop).
+    */
+    function injectEvents(events) {
+      $("#location").html( '' );
+      $('#no_event').html( i18nText("This room is free.") );
+      $("#future").html('');
+      $('#current').removeClass('has_current');
+      var now = moment();
+      var futureCount = 0;
+      for (var i = 0; i < events.length; i++) {
+        var evt = events[i];
+        if(i == 0)
+          $("#location").html( evt["calendar"] );
+        var dtstart = moment(evt["dtstart"], iso8601Fmt);
+        var dtend   = moment(evt["dtend"], iso8601Fmt);
+        if( dtend.isAfter(now) ) {
+          // event hasn't ended yet...
+          if ( dtstart.isAfter(now) ) {
+            // hasn't started yet - a.k.a. is in the future
+            $("#future").append('<div><p>' + i18nText("Next event starts {{dtstart}}", {"dtstart": myCalendar( dtstart, now )} ) + '<\/p><\/div>');
+            if (++futureCount > 2)
+              // stop after max. 3 future events.
+              break;
+          } else {
+            // HAS already started
+            $('#current').addClass('has_current');
+            $("#location").html( evt["calendar"] ? evt["calendar"] : '');
+            $("#summary").html( evt["summary"] ? evt["summary"] : '' );
+            $("#notes").html( evt["description"] ? evt["description"] : '' );
+            $("#startend").html( i18nText("from {{dtstart}} to {{dtend}}", {
+              "dtstart": myCalendar( dtstart, now ),
+              "dtend": myCalendar( dtend, dtstart ),
+            }) );
+          }
+        }
+      }
+      return "ok";
+    }
+    //]]>
+  </script><!--
+  <script type="text/javascript" src="sampledata.js"></script>
+-->
+</body>
+</html>
