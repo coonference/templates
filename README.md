@@ -11,6 +11,9 @@ Coonference relies on iOS for calendar subscription + sync (see ‘Subscribe to 
 
 Leverage “Guided Access” (see http://support.apple.com/manuals/) to lock the device.
 
-Thanks to jquery Licens Information MIT jquery.org/license 
+Thanks to 
+jquery Licens Information MIT jquery.org/license
+MOMENTjs License Information MIT
+
 
 
